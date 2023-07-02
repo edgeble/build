@@ -322,6 +322,13 @@ case ${BOARD} in
 		export CROSS_COMPILE=aarch64-none-linux-gnu-
 		CHIP="rk3588"
 		;;
+	"rk3588-neu6b")
+		UBOOT_DEFCONFIG=neu6b-rk3588_defconfig
+		DTB=rk3588-edgeble-neu6b-io.dtb
+		export ARCH=arm64
+		export CROSS_COMPILE=aarch64-linux-gnu-
+		CHIP="rk3588"
+		;;
 	*)
 		echo "board '${BOARD}' not supported!"
 		exit -1

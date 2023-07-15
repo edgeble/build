@@ -1,43 +1,43 @@
-The build and update image usage as follows:
-Which config needed for us, pls refer to build/board_configs.sh or
-http://opensource.rock-chips.com/wiki_Board_Config
+# Build
 
-##Fox example the rk3288-evb Usage:
+## source
 
-build kernel image:  (output : boot.img and out/kernel)
+```shell
+mkdir ~/neu6b-sdk && cd ~/neu6b-sdk
+git clone -b stable-5.10-rock5 https://github.com/edgeble/u-boot
+git clone -b linux-5.10-gen-rkr3.4 https://github.com/edgeble/kernel
+git clone -b master https://github.com/rockchip-linux/rkbin
+git clone -b debian https://github.com/edgeble/build
+git clone -b main https://github.com/edgeble/debos
+```
 
-	build/mk-kernel.sh rk3288-evb
-    
-build u-boot image:  (output : out/u-boot)
+## export toolchain
 
-	build/mk-uboot.sh rk3288-evb
-    
-build rootfs image:
+```shell
+export PATH=/toolchain/path/upto/bin:$PATH
+```
 
-	follow readme in rk-rootfs-build
+## u-boot
 
-build one system image:  (output : system.img)
+```shell
+cd ~/rk3588-sdk
+./build/mk-uboot.sh rk3588-neu6b
+```
 
-	build/mk-image.sh -c rk3288 -t system -r rk-rootfs-build/linaro-rootfs.img
+Program flash
+```shell
+cd out/u-boot
+sudo dd if=./idbloader.img of=/dev/sdX bs=512 seek=64
+sudo dd if=./u-boot.itb of=/dev/sdX bs=512 seek=16384
+```
 
-update image: 
+## kernel
 
-	eMMC: build/flash_tool.sh   -c rk3288 -p system  -i  out/system.img
-	sdcard: build/flash_tool.sh -c rk3288  -d /dev/sdb -p system  -i  out/system.img 
-	rockusb: build/flash_tool.sh -p system  -i  out/system.img 
-
-### Debian package
-
-To pack the firmware in the deb package:  (output : out/debian)
-
-	build/pack_deb.sh -c rk3288 -d /dev/mmcblk0(mmc index in target device, not host) (-r rk-rootfs-build/linaro-rootfs.img)
-
-Tthe debs could be installed in the board by the following command.   
-
-	sudo dpkg -i u-boot-rockchip_1.0_all.deb
-	sudo dpkg -i kernel-rockchip_1.0_all.deb
-
-### Tips
-* You must boot into [maskrom](http://opensource.rock-chips.com/wiki_Rockusb#Maskrom_mode) to flash the eMMC. Booting into [rkusb](http://opensource.rock-chips.com/wiki_Rockusb#Miniloader_Rockusb.C2.A0mode) mode will not work.
-  * An easy way to enter maskrom is by erasing the eMMC and rebooting.
-* Provide the chip name for `-c` parameters, _not_ the board name! (e.g. rk3288 instead of rk3288-evb).
+```shell
+cd ~/rk3588-sdk
+./build/mk-kernel.sh rk3588-neu6b
+```
+```shell
+ls out/kernel/
+Image  rk3588-edgeble-neu6b.dtb
+```
